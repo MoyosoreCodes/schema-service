@@ -9,42 +9,40 @@ on:
 permissions:
   contents: write
 
-
 jobs:
   sync-definitions-and-schemas:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Schema Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          repository: MoyosoreCodes/schema-service.git
-          path: schema-service
+          path: "app"
           ref: master
+          persist-credentials: false
 
       - name: Checkout GraphQL Repo
         uses: actions/checkout@v2
         with:
-          repository: MoyosoreCodes/basic-graphql-service.git
-          path: basic-graphql-service
+          path: dest
           ref: master
+          repository: MoyosoreCodes/basic-graphql-service.git
+          token: ${{ secrets.REPO_TOKEN }}
+          persist-credentials: true
 
-      - name: List Contents of Cloned Repository
+      - name: Copy definitions to graphQL service
+        shell: bash
         run: |
-          ls -R schema-service
-          ls -R basic-graphql-service
-
-      - name: Add Latest Definitions to GraphQL service
-        run: |
-          mkdir -p ./basic-graphql-service/src/typeDefs 
-          mkdir -p ./basic-graphql-service/src/model
-          ls 
-          cp -r schema-service/src/typeDefs/* ./basic-graphql-service/src/typeDefs/
-          cp -r schema-service/src/models/* ./basic-graphql-service/src/model/
+          mkdir -p ./dest/src/typeDefs 
+          mkdir -p ./dest/src/model
+          cp -r app/src/typeDefs/* ./dest/src/typeDefs/
+          cp -r app/src/models/* ./dest/src/model/
 
       - name: Commit and Push changes
+        shell: bash
+        working_directory: dest
         run: |
-          cd basic-graphql-service
+          cd dest
           git config --global user.name github-actions
           git config --global user.email github-actions@github.com
           git add .
