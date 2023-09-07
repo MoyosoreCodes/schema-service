@@ -22,7 +22,7 @@ jobs:
           persist-credentials: false
 
       - name: Checkout GraphQL Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: dest
           ref: master
@@ -40,9 +40,8 @@ jobs:
 
       - name: Commit and Push changes
         shell: bash
-        working_directory: dest
+        working-directory: dest
         run: |
-          cd dest
           git config --global user.name github-actions
           git config --global user.email github-actions@github.com
           git add .
