@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import { graphqlHTTP } from "express-graphql";
 import { buildSchema } from "graphql";
 import { config } from "dotenv";
-import userTypeDefs from "./typeDefs/user.gql"
 
 config();
 const app = express();
@@ -12,9 +11,7 @@ mongoose.connect(`${process.env.MONGODB_URI}`);
 
 app.use(express.json());
 
-const schema = buildSchema(`
-  ${userTypeDefs}
-`);
+const schema = buildSchema(``);
 
 app.use(
   "/graphql",
