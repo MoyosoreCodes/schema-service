@@ -1,0 +1,52 @@
+name: Sync GraphQL Definitions
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+
+jobs:
+  sync-definitions-and-schemas:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Schema Repo
+        uses: actions/checkout@v2
+        with:
+          repository: MoyosoreCodes/schema-service.git
+          path: schema-service
+          ref: master
+
+      - name: Checkout GraphQL Repo
+        uses: actions/checkout@v2
+        with:
+          repository: MoyosoreCodes/basic-graphql-service.git
+          path: basic-graphql-service
+          ref: master
+
+      - name: List Contents of Cloned Repository
+        run: |
+          ls -R schema-service
+          ls -R basic-graphql-service
+
+      - name: Add Latest Definitions to GraphQL service
+        run: |
+          mkdir -p ./basic-graphql-service/src/typeDefs 
+          mkdir -p ./basic-graphql-service/src/model
+          ls 
+          cp -r schema-service/src/typeDefs/* ./basic-graphql-service/src/typeDefs/
+          cp -r schema-service/src/models/* ./basic-graphql-service/src/model/
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name github-actions
+          git config --global user.email github-actions@github.com
+          cd basic-graphql-service
+          git add .
+          git commit -m "[skip ci] Update GraphQL definitions"
+          git push origin master
